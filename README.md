@@ -2,7 +2,7 @@
 Export Airtable images from grid view
 
 
-I use Airtable as a collobarative workspace for an ecommerce venture. The workflow involved one user half-way across the country uploading images for each new table entry, while I needed a way to extract those images to upload them to different websites. Many Airtable users were looking for an image export solution, so I thought I'd share one method for exporting uploaded images out of an Airtable cell.
+I use Airtable as a collobarative workspace for an ecommerce venture. The workflow involves one user half-way across the country uploading images for each new table entry, while I then extract those images to upload to different websites. Many Airtable users were looking for an image export solution, so I thought I'd share one method for exporting uploaded images out of an Airtable cell.
 
 ## Preliminary Setup
 This solution involves using the Unix command line so it's suitable for Mac & Linux users. I'm on a Mac so all the examples here will use Mac-centric tools. You will need to download the `csvkit` package, which can be added from the command line after you've installed [the Homebrew package manager](https://brew.sh/):
@@ -29,7 +29,7 @@ This ends up in our ~/Downloads folder and we're ready to start extracting our i
 
 I'm using Keyboard Maestro to bundle all the commands logically together but it's not necessary. Even if you're not using Keyboard Maestro, the structure it provides will help visualize the overall automation.
 
-Here's how the actual table looks:
+Here's how the actual table looks (click for a larger image):
 
 <p align="center">
   <img src="https://github.com/geopor/airtable-image-export/blob/main/Airtable-Grid_View.png">
@@ -51,7 +51,7 @@ We set the `Item_ID` variable to the value we retrieved earlier from the clipboa
 
 ### 3. Execute Shell Script - Set Variable "MostRecentCSV"
 `ls -t ~/Downloads | grep ".*\.csv$" | head -1 |  tr " " "_"`
-The following shell command sorts all items in our ~/Downloads folder with the most recent at the top. That means when we `grep` for a .csv file, our most recent export will be at the top. The last pipe command `tr` replaces spaces in the filename with underscores.
+This shell command sorts all items in our ~/Downloads folder with the most recent at the top. That means when we `grep` for a .csv file, it will match our most recent export. The last pipe command `tr` replaces spaces in the filename with underscores.
 
 ### 4. Execute Shell Script - Make Directory & Find Images in CSV
 ```
@@ -60,7 +60,7 @@ mkdir $KMVAR_Item_ID
 cd $KMVAR_Item_ID
 csvgrep -c ID -m $KMVAR_Item_ID ~/Downloads/$KMVAR_MostRecentCSV  | csvcut -c 6 | awk -F "[()]" '{ for (i=2; i<NF; i+=2) print $i }' | xargs -n 1 curl -O 
 ```
-The last shell script we execute will create a folder in our exported images base folder (here we're using `~/Downloads/_item_pics`) to hold our images. We'll `cd` into the directory so that the output of the next command will be sent to this folder.
+The last shell script we execute will create a folder in our exported images base folder to hold our images (here we're using `~/Downloads/_item_pics`) . We'll `cd` into the directory so that the output of the next command will be sent to this folder.
 
 `csvgrep` searches for the item's ID (`$KMVAR_ItemID`) in the most recently downloaded csv export (`$KMVAR_MostRecentCSV`). The output is the found row, of which we only want the sixth column containing our images (`csvcut -c 6`). The `awk` and `print` commands strip away unecessary characters and return only the raw image URLs. Finally, `xargs` is called to loop through each image and `curl` it into our local folder.
 
