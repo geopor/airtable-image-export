@@ -68,6 +68,7 @@ The last shell script we execute will create a folder in our exported images bas
 ### 5. Open The Resulting Folder
 We have Keyboard Maestro open the folder containing our exported images. You can customize this script and add to it if you need to perform other actions with this script. For example, the title of the item can be saved to a variable and automatically entered into a webpage that the script loads. 
 
+## How To Backup All Airtable Table Images
 You can also export all images from your table in one go by simply going through each row one by one and running `xargs` and `curl` on the raw image URLs. For example, given a latest `table-latest.csv` Airtable export where the attachments are in the 6th column, this command will download all images for the table in the current directory:
 
 `cat table-latest.csv | csvcut -c 6 | awk -F "[()]" '{ for (i=2; i<NF; i+=2) print $i }' | xargs -n 1 curl -O` 
