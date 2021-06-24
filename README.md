@@ -51,6 +51,7 @@ We set the `Item_ID` variable to the value we retrieved earlier from the clipboa
 
 ### 3. Execute Shell Script - Set Variable "MostRecentCSV"
 `ls -t ~/Downloads | grep ".*\.csv$" | head -1 |  tr " " "_"`
+
 This shell command sorts all items in our ~/Downloads folder with the most recent at the top. That means when we `grep` for a .csv file, it will match our most recent export. The last pipe command `tr` replaces spaces in the filename with underscores.
 
 ### 4. Execute Shell Script - Make Directory & Find Images in CSV
